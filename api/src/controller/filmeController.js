@@ -1,6 +1,14 @@
-import { inserirFilme } from '../repository/filmeRepository.js';
+import { alterarImagem, consultarFilmesId,  inserirFilme,filtronome, listarTodosFilmes, removerFilme, alterarFilme} from '../repository/filmeRepository.js';
+
+
+import multer from 'multer' 
+
 import { Router } from 'express';
+import { con } from '../repository/connection.js';
 const server = Router();
+
+const upload = multer({ dest: 'storage/capaFilmes' })
+
 
 server.post('/filme' ,  async(req, resp) =>{
     try{
@@ -17,6 +25,130 @@ server.post('/filme' ,  async(req, resp) =>{
          });
     }
 })
+server.put('/filme/:id/imagem', upload.single('capa') ,async (req, resp) => {
+    try{
+        const { id } = req.params;
+        const imagem = req.file.path;
+
+        const resposta  = await alterarImagem (imagem, id);
+
+        if(resposta != 1)
+            throw new Error('A imagem não pode ser salva :(' );
+
+        resp.status(204).send();
+
+    }   catch(err){
+         console.log(err)
+        resp.status(408).send({
+            erro:err.message
+        });
+    }
+})
+
+server.get ('/filme' , async (req,resp) =>{
+   try{
+       const resposta = await listarTodosFilmes();
+       resp.send(resposta);
+
+   } catch(err){
+
+    resp.status(400)({
+        erro:err.message
+    })
+   }
+
+})
+
+
+server.get('/filme/busca', async (req, resp) => {
+    try {
+        const { nome } = req.query;
+        
+        const resposta = await filtronome(nome);
+       
+        if(resposta.length===0)
+           resp.status(404).send([])
+    } catch (err) {
+        resp.status(400).send({
+            erro:err.message
+        })
+    }
+})
+
+
+server.get ('/filme/:id' , async (req,resp) =>{
+    try{
+        const id = Number( req.params.id);
+        const resposta = await consultarFilmesId(id);
+         
+        if(!resposta)
+          resp.status(404).send([])
+        else
+            resp.send(resposta);
+
+      
+    } catch(err){
+ 
+     resp.status(400)({
+         erro:err.message
+     })
+    }
+ 
+ })
+
+ server.delete('/filme/:id' , async (req , resp)=>{
+     try{
+         const {id} = req.params;
+
+         const resposta = await removerFilme(id);
+         
+         if(resposta!=1)
+         throw new Error('filme nao pode ser removido');
+
+         resp.status(204).send();
+
+     }catch(err){
+         resp.status(404).send({
+             erro:err.message
+         })
+     }
+ })
+
+ server.put('/filme/:i1d', async (req, resp) => {
+     try {
+         const  {id} = req.params;
+         const  filme = req.body;
+
+          if(filme.nome)
+          throw new Error ('nome do filme e obrigatorio')
+          if(filme.sinopose)
+          throw new Error ('sinopse do filme e obrigatorio')
+          if(filme.avalicao)
+          throw new Error ('avalição do filme e obrigatorio')
+          if(filme.lancamento)
+          throw new Error ('lancaçento do filme e obrigatorio')
+          if(filme.disponivel == undefined)
+          throw new Error ('Campo disponivel do filme e obrigatorio')
+          if(filme.usuario)
+          throw new Error ('usuario  do filme e obrigatorio')
+        
+
+        const  resposta = await alterarFilme(id, filme);
+        if(resposta != 1)
+            throw new Error ('filme kasdlasda')
+        else  
+          resp.status(204).send();
+
+     }
+     catch(err){
+        resp.status(404).send({
+            erro:err.message
+        })
+    }
+ })
+
+
+
 
 export default server;
 

@@ -1,5 +1,6 @@
 import { con } from './connection.js';
 
+
 export async function inserirFilme(filme){
    const comando = 
    `
@@ -10,3 +11,92 @@ export async function inserirFilme(filme){
     filme.id=  resposta.insertId
     return filme
 }
+
+
+
+export async function alterarImagem(imagem, id) {
+  const comando = 
+     `UPDATE tb_filme 
+      SET img_filme     = ?
+      WHERE id_filme    = ?`;
+
+      const [resposta] = await con.query(comando, [imagem, id]);
+      return resposta.affectedRows;
+}
+
+
+
+export async function listarTodosFilmes(){
+ 
+   const comando=
+   `SELECT id_filme			    id,
+          nm_filme		    	nome,
+          vl_avaliacao		  avaliacao,
+          dt_lancamento	    lancamento,
+          bt_disponivel	    disponivel
+  FROM    tb_filme;`
+         
+  const [linhas] = await con.query(comando)
+  return linhas;
+
+}
+
+export async function consultarFilmesId(id){
+ 
+  const comando=
+  `SELECT id_filme			    id,
+         nm_filme		       	nome,
+         vl_avaliacao		    avaliacao,
+         ds_sinopse         sinopse,
+         dt_lancamento	    lancamento,
+         bt_disponivel	    disponivel
+   FROM  tb_filme
+   WHERE id_filme           = ? ;`
+ 
+        
+ const [linhas] = await con.query(comando, [id])
+ return linhas [0];
+
+}
+export async function filtronome(nome) {
+  const comando = 
+  `SELECT id_filme            id,
+          nm_filme            nome,
+          vl_avaliacao        avaliacao,
+          dt_lancamento        lancamento,
+          bt_disponivel        disponivel
+          FROM tb_filme
+          WHERE nm_filme like ?`;
+
+  const [linhas] = await con.query(comando, [`%${nome}%`]);
+  console.log
+  return linhas;
+
+}
+
+
+export async function removerFilme(id){
+
+  const comando  =
+`  DELETE FROM tb_filme 
+   WHERE id_filme = ?`;
+
+   const [resposta] = await con.query(comando, [id]);
+   return resposta.affectedRows;
+}
+
+export async function alterarFilme(id, filme){
+   const comando=
+   `   UPDATE tb_filme 
+       SET nm_filme      =  ?,
+            ds_sinopse    = ?,
+            vl_avaliacao  = ?,
+           dt_lancamento =  ?,
+           bt_disponivel =  ?
+      wHERE id_filme = ?`
+  
+  const [resposta] = await con.query(comando, [filme.sinopse, filme.avaliacao, filme.lancamento,filme.disponivel, id]);
+    return resposta.affectedRows;
+
+}
+

@@ -32,7 +32,7 @@ request body
 
 response{
     "id": 1,
-        "nome": "";
+    "nome": "";
      "sinopse": "" ,
      "avaliacao": 0.0,
      "lancamento":2020-10-,
