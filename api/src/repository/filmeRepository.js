@@ -48,6 +48,7 @@ export async function consultarFilmesId(id){
          nm_filme		       	nome,
          vl_avaliacao		    avaliacao,
          ds_sinopse         sinopse,
+         img_filme           imagem,
          dt_lancamento	    lancamento,
          bt_disponivel	    disponivel
    FROM  tb_filme
@@ -58,45 +59,47 @@ export async function consultarFilmesId(id){
  return linhas [0];
 
 }
-export async function filtronome(nome) {
-  const comando = 
-  `SELECT id_filme            id,
-          nm_filme            nome,
-          vl_avaliacao        avaliacao,
-          dt_lancamento        lancamento,
-          bt_disponivel        disponivel
-          FROM tb_filme
-          WHERE nm_filme like ?`;
 
-  const [linhas] = await con.query(comando, [`%${nome}%`]);
-  console.log
-  return linhas;
+export async function buscarPornome(nome){
+  const comando = 
+`SELECT id_filme            id,
+        nm_filme              nome,
+        vl_avaliacao          avaliacao,
+        dt_lancamento        lancamento,
+        bt_disponivel        disponivel
+  FROM tb_filme
+WHERE nm_filme like ?`;
+
+        const [linhas] = await con.query(comando, [`%${nome}%`] );
+        return linhas 
 
 }
 
 
 export async function removerFilme(id){
+    const comando =
+      `DELETE FROM tb_filme 
+             WHERE id_filme = ?
+`;
 
-  const comando  =
-`  DELETE FROM tb_filme 
-   WHERE id_filme = ?`;
-
-   const [resposta] = await con.query(comando, [id]);
-   return resposta.affectedRows;
-}
-
-export async function alterarFilme(id, filme){
-   const comando=
-   `   UPDATE tb_filme 
-       SET nm_filme      =  ?,
-            ds_sinopse    = ?,
-            vl_avaliacao  = ?,
-           dt_lancamento =  ?,
-           bt_disponivel =  ?
-      wHERE id_filme = ?`
-  
-  const [resposta] = await con.query(comando, [filme.sinopse, filme.avaliacao, filme.lancamento,filme.disponivel, id]);
-    return resposta.affectedRows;
+    const [resposta] = await con.query(comando, [id] );
+    return  resposta.affectedRows;
 
 }
+
+export async function alterarFilme (id, filme){
+  const comando = 
+  `
+ UPDATE tb_filme 
+    SET nm_filme            = ?,
+        ds_sinopse          = ?,
+        vl_avaliacao        = ?,
+        dt_lancamento       = ?,
+        bt_disponivel       = ?
+  WHERE id_filme            = ?;
+  `
+  const [resposta] =   await  con.query (comando , [filme.nome , filme.sinopse, filme.avaliacao, filme.lancamento, filme.disponivel, id]);
+   return resposta.affectedRows
+}
+
 
