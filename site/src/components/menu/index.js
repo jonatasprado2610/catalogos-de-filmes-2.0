@@ -1,14 +1,28 @@
 import storage from 'local-storage'
 import './index.scss'
-import {useNavigate} from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import { useState } from 'react';
 
 export default function Index() {
-    const navigate=useNavigate();
+    const { menuSelecionado, setMenuSelecionado } = useState('home');
+    const navigate = useNavigate();
 
-    function sairClick(){
-     storage.remove('usuario-logado');
-     navigate('/')
-     console.log('aaaa')
+    function sairClick() {
+        storage.remove('usuario-logado');
+        navigate('/')
+        
+    }
+
+    function selecionadoMenu(menu) {
+        setMenuSelecionado(menu);
+        
+    }
+
+    function verificarMenuSelecionado(menu) {
+        
+        if(menu == menuSelecionado)
+         return 'selecionado'
+        console.log(menu)
     }
 
     return (
@@ -20,27 +34,27 @@ export default function Index() {
                 </div>
 
                 <div className='menu-items'>
-                    <div>
+                    <Link to='/admin' onClick={() => selecionadoMenu('home')} className={verificarMenuSelecionado('home')}>
                         <img src="/assets/images/icon-home.svg" alt="home" />
                         <div>Home</div>
-                    </div>
-                    <div>
+                    </Link>
+                    <Link to='/admin/cadastrar' onClick={() => selecionadoMenu('cadastrar')}  className={verificarMenuSelecionado('cadastrar')}>
                         <img src="/assets/images/icon-cadastrar.svg" alt="cadastrar" />
                         <div>Cadastrar</div>
-                    </div>
-                    <div>
+                    </Link>
+                    <Link to='/admin/consultar' onClick={() => selecionadoMenu('consultar')} className={verificarMenuSelecionado('consultar')}>
                         <img src="/assets/images/icon-consultar.svg" alt="consultar" />
                         <div>Consultar</div>
-                    </div>
+                    </Link>
                 </div>
             </div>
 
             <div className='menu-items'>
-                <div>
+                <Link to='#' onClick={sairClick}>
                     <img src="/assets/images/icon-sair.svg" alt="consultar" />
-                    <div onClick={sairClick}>Sair</div>
-                </div>
+                    <div>Sair</div>
+                </Link>
             </div>
         </nav>
-    )
+    );
 }
