@@ -14,7 +14,7 @@ export default function Index() {
     const ref =useRef();
 
     useEffect(() => { 
-        if(storage('usuario-logad')){
+        if(storage('usuario-logado')){
             navigate('/admin')
         }
     },[])
