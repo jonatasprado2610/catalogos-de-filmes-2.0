@@ -29,12 +29,13 @@ export async function alterarImagem(imagem, id) {
 export async function listarTodosFilmes(){
  
    const comando=
-   `SELECT id_filme			    id,
-          nm_filme		    	nome,
-          vl_avaliacao		  avaliacao,
-          dt_lancamento	    lancamento,
-          bt_disponivel	    disponivel
-  FROM    tb_filme;`
+   `SELECT
+   id_filme AS id,
+   nm_filme AS nome,
+   vl_avaliacao AS avaliacao,
+   DATE_FORMAT(dt_lancamento, '%d/%m/%Y') AS lancamento,
+   bt_disponivel AS disponivel
+ FROM tb_filme;`
          
   const [linhas] = await con.query(comando)
   return linhas;
@@ -60,20 +61,21 @@ export async function consultarFilmesId(id){
 
 }
 
-export async function buscarPornome(nome){
-  const comando = 
-`SELECT id_filme            id,
-        nm_filme              nome,
-        vl_avaliacao          avaliacao,
-        dt_lancamento        lancamento,
-        bt_disponivel        disponivel
-  FROM tb_filme
-WHERE nm_filme like ?`;
-
-        const [linhas] = await con.query(comando, [`%${nome}%`] );
-        return linhas 
-
+export async function buscarPorNome(nome) {
+  const comando =
+      `SELECT id_filme		id,
+              nm_filme		nome,
+              vl_avaliacao	avaliacao,
+              DATE_FORMAT(dt_lancamento, '%d/%m/%Y') AS lancamento,
+              bt_disponivel	disponivel,
+              id_usuario      usuario
+         FROM tb_filme
+        WHERE nm_filme like ? `;
+  
+  const [linhas] = await con.query(comando, [ `%${nome}%` ]);
+  return linhas;
 }
+
 
 
 export async function removerFilme(id){

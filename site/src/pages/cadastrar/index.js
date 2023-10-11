@@ -1,6 +1,6 @@
 import Menu from '../../components/menu'
 import Cabecalho from '../../components/cabecalho'
-import  {cadastrarFilme,enviarImagemFilme} from '../../api/filmeapi'
+import { cadastrarFilme, enviarImagemFilme, alterarFilme } from '../../api/filmeapi'
 import './index.scss'
 import { useState } from 'react'
 import storage from 'local-storage'
@@ -9,41 +9,89 @@ import { toast } from 'react-toastify';
 
 
 export default function Index() {
- const [nome, setNome] = useState('');
- const [sinopse, setSinpose] = useState('');
- const [avaliacao, setAvalicao] = useState(0);
- const [disponivel, setDisponivel] = useState(false);
- const [lancamento, setLancamento] = useState('');
- const [imagem, setImagem] = useState('');
+    const [nome, setNome] = useState('');
+    const [sinopse, setSinpose] = useState('');
+    const [avaliacao, setAvalicao] = useState(0);
+    const [disponivel, setDisponivel] = useState(false);
+    const [lancamento, setLancamento] = useState('');
+    const [imagem, setImagem] = useState();
+    const [id, setId]= useState(0);
 
- 
- async function salvarClick(){
+  function mostrarImagem() {
+        return URL.createObjectURL(imagem)
+    }
+    
+    function escolherImagem() {
+        document.getElementById('imagemCapa').click();
+    }
 
-   try{
-       const usuario = storage('usuario-logado').id;
-       const r = await cadastrarFilme(nome,avaliacao,lancamento,disponivel,sinopse,usuario);
-       toast.dark('🚀 Filme Cadastrado com Sucesso!')
-   }catch(err){
-         toast.error(err.response.data.erro);
-   }
+    async function salvarClick() {
 
- }
+        try {
+            if(!imagem)
+             throw new Error('Escolha a capa do filme.');
+
+            const usuario = storage('usuario-logado').id;
+
+         
+
+            if(id === 0){
+                 const novoFilme = await cadastrarFilme(nome, avaliacao, lancamento, disponivel, sinopse, usuario);
+                 await enviarImagemFilme(novoFilme.id, imagem);
+                 setId(novoFilme.id)
+                 toast.dark('🚀 Filme Cadastrado com Sucesso!')
+            }else{
+                await alterarFilme(id, nome, avaliacao, lancamento, disponivel, sinopse, usuario);
+                await enviarImagemFilme(id, imagem);
+                toast.dark('🚀 Filme Alterado com Sucesso!')
+            }
+           
+            
+
+           
+        } catch (err) {
+            if(err.response)
+            toast.error(err.response.data.erro);
+            else
+            toast.error(err.message);
+        }
+
+    }
+    function novoClick(){
+        setId(0);
+        setNome('');
+        setAvalicao(0);
+        setLancamento('');
+        setDisponivel(false);
+        setSinpose('');
+        setImagem()
+    }
+
+
+  
 
     return (
         <main className='page page-cadastrar'>
-         
+
             <Menu />
             <div className='container'>
                 <Cabecalho />
-                
+
                 <div className='conteudo'>
                     <section>
                         <h1 className='titulo'><span>&nbsp;</span> Cadastrar Novo Filme</h1>
 
                         <div className='form-colums'>
                             <div>
-                                <div className='upload-capa'>
-                                    <img src="/assets/images/icon-upload.svg" alt="" />
+                                <div className='upload-capa' onClick={escolherImagem}>
+                                    {!imagem &&
+                                        <img src="/assets/images/icon-upload.svg" alt="" />
+                                    }
+                                    {imagem &&
+                                        <img className='imagem-capa' src={mostrarImagem()} alt='' />
+                                    }
+
+                                    <input type="file" id='imagemCapa' onChange={e => setImagem(e.target.files[0])} />
                                 </div>
                             </div>
                             <div>
@@ -53,11 +101,11 @@ export default function Index() {
                                 </div>
                                 <div className='form-row'>
                                     <label>Avaliação:</label>
-                                    <input type='number' placeholder='0' value={avaliacao} onChange={e => setAvalicao(e.target.value)}  />
+                                    <input type='number' placeholder='0' value={avaliacao} onChange={e => setAvalicao(e.target.value)} />
                                 </div>
                                 <div className='form-row'>
                                     <label>Lançamento:</label>
-                                    <input type='date'  value={lancamento} onChange={e => setLancamento(e.target.value)} />
+                                    <input type='date' value={lancamento} onChange={e => setLancamento(e.target.value)} />
                                 </div>
                                 <br />
                                 <div className='form-row'>
@@ -66,8 +114,8 @@ export default function Index() {
                                 </div>
                             </div>
                             <div>
-                                <div className='form-row' style={{alignItems: 'flex-start'}}>
-                                    <label style={{marginTop: '13px'}}>Sinopse:</label>
+                                <div className='form-row' style={{ alignItems: 'flex-start' }}>
+                                    <label style={{ marginTop: '13px' }}>Sinopse:</label>
                                     <textarea placeholder='Sinopse do filme' value={sinopse} onChange={e => setSinpose(e.target.value)} />
                                 </div>
                                 <br />
@@ -75,7 +123,8 @@ export default function Index() {
                                 <div className='form-row'>
                                     <label></label>
                                     <div className='btnSalvar'>
-                                        <button onClick={salvarClick}>SALVAR</button>    
+                                        <button onClick={salvarClick}>{id ===  0 ? 'SALVA': 'ALTERAR'}</button> &nbsp; &nbsp;
+                                        <button onClick={novoClick}>NOVO</button>
                                     </div>
                                 </div>
                             </div>
@@ -83,7 +132,7 @@ export default function Index() {
                     </section>
                 </div>
             </div>
-            
+
         </main>
     )
 }

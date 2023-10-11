@@ -22,7 +22,7 @@ export default function Index() {
         
         if(menu == menuSelecionado)
          return 'selecionado'
-        console.log(menu)
+        
     }
 
     return (

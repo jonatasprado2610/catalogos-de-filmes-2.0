@@ -54,12 +54,13 @@ DELETE FROM tb_filme
 
 
 -- CSU05:: consultar todos os filmes      
-SELECT id_filme			id,
-	  nm_filme			nome,
-       vl_avaliacao		avaliacao,
-       dt_lancamento	lancamento,
-       bt_disponivel	disponivel
-  FROM tb_filme;
+SELECT
+  id_filme AS id,
+  nm_filme AS nome,
+  vl_avaliacao AS avaliacao,
+  DATE_FORMAT(dt_lancamento, '%d/%m/%Y') AS lancamento,
+  bt_disponivel AS disponivel
+FROM tb_filme;
   
 
 
@@ -68,7 +69,7 @@ SELECT id_filme			id,
 SELECT id_filme			id,
 	  nm_filme			nome,
        vl_avaliacao		avaliacao,
-       dt_lancamento	lancamento,
+      DATE_FORMAT(dt_lancamento, '%d/%m/%Y') AS lancamento,
        bt_disponivel	disponivel
   FROM tb_filme
  WHERE nm_filme			like '%a%';

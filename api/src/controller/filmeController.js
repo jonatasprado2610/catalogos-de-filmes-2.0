@@ -1,4 +1,4 @@
-import { alterarImagem, consultarFilmesId,  inserirFilme, listarTodosFilmes, buscarPornome, removerFilme, alterarFilme} from '../repository/filmeRepository.js';
+import { alterarImagem, consultarFilmesId,  inserirFilme, listarTodosFilmes,  removerFilme, alterarFilme, buscarPorNome} from '../repository/filmeRepository.js';
 
 
 import multer from 'multer' 
@@ -43,23 +43,24 @@ server.post('/filme', async (req, resp) => {
     }
 })
 
-server.put('/filme/:id/imagem', upload.single('capa') ,async (req, resp) => {
-    try{
+server.put('/filme/:id/capa', upload.single('capa'), async (req, resp) => {
+    try {
+        if(!req.file ){
+            throw new Error('Escolha a capa do Filme.');
+        }
+
         const { id } = req.params;
         const imagem = req.file.path;
 
-        const resposta  = await alterarImagem (imagem, id);
-
-        if(resposta != 1)
-            throw new Error('A imagem não pode ser salva :(' );
+        const resposta = await alterarImagem(imagem, id);
+        if (resposta != 1)
+            throw new Error('A imagem não pode ser salva.');
 
         resp.status(204).send();
-
-    }   catch(err){
-         console.log(err)
-        resp.status(408).send({
-            erro:err.message
-        });
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        })
     }
 })
 
@@ -77,17 +78,23 @@ server.get ('/filme' , async (req,resp) =>{
 
 })
 
-server.get('/filme/busca' , async (req, resp)=>{
-     const  { nome } = req.query;
 
-     const  resposta  = await  buscarPornome(nome);
-
-     if(!resposta)
-        resp.send(404).send([])
-    else
-        resp.send(resposta)
-
-
+server.get('/filme/busca', async (req, resp) => {
+    try {
+        const { nome } = req.query;
+        
+        const resposta = await buscarPorNome(nome);
+        console.log(resposta);
+        if (resposta.length == 0)
+            resp.status(404).send([])
+        else
+            resp.send(resposta);
+    } catch (err) {
+        resp.status(400).send({
+            erro: err.message
+        })
+    }
+  
 })
 
 
@@ -110,7 +117,7 @@ server.get ('/filme/:id' , async (req,resp) =>{
          erro:err.message
      })
     }
- 
+    
  })
 
  server.delete('/filme/:id', async (req,resp) => {
