@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom/client';
 import './index.scss';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import Routes from './routes';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

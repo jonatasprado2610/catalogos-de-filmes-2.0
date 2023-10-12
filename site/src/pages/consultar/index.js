@@ -1,34 +1,64 @@
 import Menu from '../../components/menu'
 import Cabecalho from '../../components/cabecalho'
-import { listarTodosFilmes, buscarFilmesNome } from '../../api/filmeapi'
+import { listarTodosFilmes, buscarFilmesNome, removerFilme } from '../../api/filmeapi'
 import './index.scss'
 import { useEffect, useState } from 'react'
-
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import {toast } from 'react-toastify'
 
 
 export default function Index() {
+
+
+
     const [filtro, setFiltro] = useState('');
-    const  [filmes , setFilmes] = useState([]);
- 
+    const [filmes, setFilmes] = useState([]);
+
 
 
 
     async function carregarTodosFilmes() {
         const resp = await listarTodosFilmes();
-     
+
         setFilmes(resp)
 
 
     }
 
-    async function filtrar(){
-         const resp = await buscarFilmesNome(filtro)
-         setFilmes(resp)
+    async function filtrar() {
+        const resp = await buscarFilmesNome(filtro)
+        setFilmes(resp)
+    }
+
+    async function removerFilmeClick(id, nome) {
+        confirmAlert({
+            title: 'Remover Filme',
+            message: `Deseja remover o filme ${nome}?`,
+            buttons: [
+                {
+                    label: 'Sim',
+                    onClick: async () => {
+                        const resp = await removerFilme(id, nome);
+                        if (filtro === '')
+                            carregarTodosFilmes();
+                        else
+                            filtrar();
+                        toast.dark('🚀Filme removido com sucesso!');
+                    }
+                },
+                {
+                    label: 'Nao',
+                    onClick: () => alert('Click No')
+                }
+            ]
+        });
+
+
     }
 
 
-    useEffect(()=>{
-         carregarTodosFilmes();
+    useEffect(() => {
+        carregarTodosFilmes();
     }, [])
 
 
@@ -42,7 +72,7 @@ export default function Index() {
                 <div className='conteudo'>
 
                     <div className='caixa-busca'>
-                        <input type="text" placeholder='Buscar filmes por nome' value={filtro}  onChange={e => setFiltro(e.target.value)} />
+                        <input type="text" placeholder='Buscar filmes por nome' value={filtro} onChange={e => setFiltro(e.target.value)} />
                         <img src='/assets/images/icon-buscar.svg' alt='buscar' onClick={filtrar} />
                     </div>
 
@@ -59,28 +89,28 @@ export default function Index() {
                         </thead>
                         <tbody>
 
-                            {filmes.map(item => 
-                                
-                            <tr>
-                                <td>#{item.id}</td>
-                                <td>{item.nome}</td>
-                                <td>{item.avaliacao}</td>
-                                <td>
-                                    {item.lancamento}
-                                </td>
+                            {filmes.map(item =>
 
-                                <td>{item.disponivel?'Sim':'Não'}</td>
-                                <td>
-                                    <img src='/assets/images/icon-editar.svg' alt='editar' />
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <img src='/assets/images/icon-remover.svg' alt='remover' />
-                                </td>
-                            </tr>
-                                
+                                <tr key={item.id}>
+                                    <td>#{item.id}</td>
+                                    <td>{item.nome}</td>
+                                    <td>{item.avaliacao}</td>
+                                    <td>
+                                        {item.lancamento}
+                                    </td>
+
+                                    <td>{item.disponivel ? 'Sim' : 'Não'}</td>
+                                    <td>
+                                        <img src='/assets/images/icon-editar.svg' alt='editar' />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <img onClick={() => removerFilmeClick(item.id, item.nome)} src='/assets/images/icon-remover.svg' alt='remover' />
+                                    </td>
+                                </tr>
+
                             )}
-                           
-                          
-                          
+
+
+
 
                         </tbody>
                     </table>

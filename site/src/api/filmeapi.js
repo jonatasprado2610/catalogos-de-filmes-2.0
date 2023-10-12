@@ -55,4 +55,9 @@ export async function listarTodosFilmes(){
 export async function buscarFilmesNome(nome){
     const resposta = await api.get(`/filme/busca?nome=${nome}`);
     return resposta.data;
+}   
+
+export async function  removerFilme(id){
+    const resposta = await api.delete(`/filme/${id}`);
+    return resposta.status;
 }
