@@ -4,7 +4,7 @@ import { listarTodosFilmes, buscarFilmesNome, removerFilme } from '../../api/fil
 import './index.scss'
 import { useEffect, useState } from 'react'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import {toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 
 export default function Index() {
@@ -12,10 +12,14 @@ export default function Index() {
     const [filmes, setFilmes] = useState([]);
     const navigate = useNavigate();
 
-    function editarFilme(id){
-         navigate(`/admin/alterar/${id}`)
-        
-         console.log(navigate)
+    function abrirDetalhes(id) {
+        navigate(`/admin/detalhe/${id}`)
+    }
+
+    function editarFilme(id) {
+        navigate(`/admin/alterar/${id}`)
+
+        console.log(navigate)
     }
 
     async function carregarTodosFilmes() {
@@ -86,7 +90,7 @@ export default function Index() {
 
                             {filmes.map(item =>
 
-                                <tr key={item.id}>
+                                <tr key={item.id} onClick={() => abrirDetalhes(item.id)}>
                                     <td>#{item.id}</td>
                                     <td>{item.nome}</td>
                                     <td>{item.avaliacao}</td>
@@ -96,9 +100,18 @@ export default function Index() {
 
                                     <td>{item.disponivel ? 'Sim' : 'Não'}</td>
                                     <td>
-                                        <img onClick={()=> editarFilme(item.id)} src='/assets/images/icon-editar.svg' alt='editar' />
+                                        <img src='/assets/images/icon-editar.svg' alt='editar'
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                editarFilme(item.id)
+                                            }} />
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <img onClick={() => removerFilmeClick(item.id, item.nome)} src='/assets/images/icon-remover.svg' alt='remover' />
+                                        <img src='/assets/images/icon-remover.svg' alt='remover'
+                                            onClick={
+                                                e => {
+                                                    e.stopPropagation();
+                                                    removerFilmeClick(item.id, item.nome)
+                                                }} />
                                     </td>
                                 </tr>
 
