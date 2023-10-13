@@ -1,8 +1,9 @@
 import Menu from '../../components/menu'
 import Cabecalho from '../../components/cabecalho'
-import { cadastrarFilme, enviarImagemFilme, alterarFilme } from '../../api/filmeapi'
+import { cadastrarFilme, enviarImagemFilme, alterarFilme , buscarFilmesId, buscarImage} from '../../api/filmeapi'
 import './index.scss'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import {useParams} from 'react-router-dom'
 import storage from 'local-storage'
 import { toast } from 'react-toastify';
 
@@ -17,8 +18,35 @@ export default function Index() {
     const [imagem, setImagem] = useState();
     const [id, setId]= useState(0);
 
+
+    const {idParam} = useParams();
+
+    useEffect(()=>{
+         if(idParam){
+            carregarFilme();
+         }
+    }, [])
+
+   async function carregarFilme(){
+        const resp = await buscarFilmesId(idParam);
+        setNome(resp.nome);
+        setSinpose(resp.sinopse)
+        setAvalicao(resp.avaliacao);
+        setDisponivel(resp.disponivel);
+        setLancamento(resp.lancamento.substr(0,10));
+        setImagem(resp.imagem);
+        setId(resp.id)
+
+    }
+
   function mostrarImagem() {
-        return URL.createObjectURL(imagem)
+    if(typeof(imagem) == 'object') {
+         return URL.createObjectURL(imagem)
+    }
+    else{
+         return buscarImage(imagem)
+    }
+       
     }
     
     function escolherImagem() {
@@ -42,7 +70,8 @@ export default function Index() {
                  toast.dark('🚀 Filme Cadastrado com Sucesso!')
             }else{
                 await alterarFilme(id, nome, avaliacao, lancamento, disponivel, sinopse, usuario);
-                await enviarImagemFilme(id, imagem);
+                if(typeof(imagem)=='object')
+                  await enviarImagemFilme(id, imagem);
                 toast.dark('🚀 Filme Alterado com Sucesso!')
             }
            

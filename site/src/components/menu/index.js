@@ -8,9 +8,9 @@ export default function Index() {
     const navigate = useNavigate();
 
     function sairClick() {
-        storage.remove('usuario-logado');
-        navigate('/')
         
+        storage.remove('usuario-logado');
+      
     }
 
     function selecionadoMenu(menu) {
@@ -48,13 +48,16 @@ export default function Index() {
                     </Link>
                 </div>
             </div>
-
-            <div className='menu-items'>
-                <Link to='#' onClick={sairClick}>
-                    <img src="/assets/images/icon-sair.svg" alt="consultar" />
-                    <div>Sair</div>
-                </Link>
+            <div>
+                
+                <div className='menu-items'>
+                    <Link to='/' onClick={sairClick}>
+                        <img src="/assets/images/icon-sair.svg" alt="consultar" />
+                        <div>Sair</div>
+                    </Link>
+                </div>
             </div>
+            
         </nav>
     );
 }

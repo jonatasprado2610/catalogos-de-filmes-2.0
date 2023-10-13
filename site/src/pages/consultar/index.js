@@ -5,24 +5,22 @@ import './index.scss'
 import { useEffect, useState } from 'react'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import {toast } from 'react-toastify'
-
+import { useNavigate } from 'react-router-dom'
 
 export default function Index() {
-
-
-
     const [filtro, setFiltro] = useState('');
     const [filmes, setFilmes] = useState([]);
+    const navigate = useNavigate();
 
-
-
+    function editarFilme(id){
+         navigate(`/admin/alterar/${id}`)
+        
+         console.log(navigate)
+    }
 
     async function carregarTodosFilmes() {
         const resp = await listarTodosFilmes();
-
         setFilmes(resp)
-
-
     }
 
     async function filtrar() {
@@ -56,12 +54,9 @@ export default function Index() {
 
     }
 
-
     useEffect(() => {
         carregarTodosFilmes();
     }, [])
-
-
 
     return (
         <main className='page page-consultar'>
@@ -101,7 +96,7 @@ export default function Index() {
 
                                     <td>{item.disponivel ? 'Sim' : 'Não'}</td>
                                     <td>
-                                        <img src='/assets/images/icon-editar.svg' alt='editar' />
+                                        <img onClick={()=> editarFilme(item.id)} src='/assets/images/icon-editar.svg' alt='editar' />
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         <img onClick={() => removerFilmeClick(item.id, item.nome)} src='/assets/images/icon-remover.svg' alt='remover' />
                                     </td>

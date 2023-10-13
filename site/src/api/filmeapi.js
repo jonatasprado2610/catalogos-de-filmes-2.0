@@ -61,3 +61,14 @@ export async function  removerFilme(id){
     const resposta = await api.delete(`/filme/${id}`);
     return resposta.status;
 }
+
+
+export async function buscarFilmesId(id){
+    const resposta = await api.get(`/filme/${id}`);
+    return resposta.data
+}
+
+export function  buscarImage(imagem){
+    console.log(api.getUri())
+    return `${api.getUri()}/${imagem}`
+}

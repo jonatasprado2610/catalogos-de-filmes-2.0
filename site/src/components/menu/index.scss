@@ -25,11 +25,13 @@
         color: #E9E9E9;
         position: relative;
         left: -10px;
+        
     }
 
     .menu-items {
         display: flex;
         flex-direction: column;
+        border: 1px solid red;
     }
     .menu-items > a {
         display: flex;
@@ -55,4 +57,10 @@
         border: 1px solid red;
         background-color: #28e6b7;
     }
+   
+    .img1{
+        width: 27px;
+        margin-right: 30px;
+    }
+    
 }
